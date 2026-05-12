@@ -19,7 +19,7 @@ public class AlunoDaoImplements implements IAlunoDao {
     @Override
     public void salvar(Aluno aluno) {
         String sql =
-                "INSERT INTO aluno(nome, cpf, email,dataNascimento, telefone) VALUE (?, ?, ?, ?, ? )";
+                "INSERT INTO aluno(instituicao_id, nome, cpf, email, dataNascimento, telefone) VALUES (?, ?, ?, ?, ?, ?)";;
         try (Connection conn = sqlConn.getConnection()){
             PreparedStatement stmt = conn.prepareStatement(sql);
 
@@ -84,11 +84,86 @@ public class AlunoDaoImplements implements IAlunoDao {
 
     @Override
     public void atualizarAluno(Aluno aluno) {
+        String sql = """
+        UPDATE aluno
+        SET
+            instituicao_id = ?,
+            nome = ?,
+            cpf = ?,
+            email = ?,
+            telefone = ?,
+            dataNascimento = ?
+        WHERE idAluno = ?
+    """;
+        try (
+                Connection conn = sqlConn.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+
+            stmt.setInt(1, aluno.getId());
+            stmt.setString(2, aluno.getNome());
+            stmt.setString(3, aluno.getCpf());
+            stmt.setString(4, aluno.getEmail());
+            stmt.setString(5, aluno.getTelefone());
+
+            stmt.setDate(
+                    6,
+                    java.sql.Date.valueOf(aluno.getDataNascimento())
+            );
+
+            stmt.setInt(7, aluno.getId());
+
+            int linhasAfetadas = stmt.executeUpdate();
+
+            if (linhasAfetadas > 0) {
+
+                System.out.println("Aluno atualizado com sucesso!");
+
+            } else {
+
+                System.out.println("Nenhum aluno encontrado.");
+            }
+
+        } catch (SQLException e) {
+
+            throw new RuntimeException(
+                    "Erro ao atualizar aluno",
+                    e
+            );
+        }
+
 
     }
 
     @Override
     public void excluirAluno(int id) {
+        String sql = "DELETE FROM aluno WHERE idAluno = ?";
+
+        try (
+                Connection conn = sqlConn.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+
+            stmt.setInt(1, id);
+
+            int linhasAfetadas = stmt.executeUpdate();
+
+            if (linhasAfetadas > 0) {
+
+                System.out.println("Aluno deletado com sucesso!");
+
+            } else {
+
+                System.out.println("Aluno nao encontrado.");
+            }
+
+        } catch (SQLException e) {
+
+            throw new RuntimeException(
+                    "Erro ao deletar aluno",
+                    e
+            );
+        }
 
     }
 }

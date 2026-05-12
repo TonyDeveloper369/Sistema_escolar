@@ -1,4 +1,4 @@
-package org.example;
+package main.java.application;
 import dao.IAlunoDao;
 import daoImplements.AlunoDaoImplements;
 import database.sqlConn;
@@ -35,16 +35,12 @@ public class App {
 
                     System.out.print("Nome: ");
                     String nome = input.nextLine();
-
                     System.out.print("CPF: ");
                     String cpf = input.nextLine();
-
                     System.out.print("Email: ");
                     String email = input.nextLine();
-
                     System.out.print("Data nascimento (AAAA-MM-DD): ");
                     String data = input.nextLine();
-
                     System.out.print("Telefone: ");
                     String telefone = input.nextLine();
 
@@ -62,10 +58,53 @@ public class App {
 
                 case 2:
                     System.out.println("Atualizar Aluno");
+                    System.out.print("ID do aluno: ");
+                    int idAtualizar = input.nextInt();
+                    input.nextLine();
+
+                    Optional<Aluno> alunoOptional =
+                            alunoDaoMethods.buscarPorId(idAtualizar);
+
+                    if (alunoOptional.isPresent()) {
+
+                        Aluno aluno = alunoOptional.get();
+
+                        System.out.print("Novo nome: ");
+                        aluno.setNome(input.nextLine());
+
+                        System.out.print("Novo CPF: ");
+                        aluno.setCpf(input.nextLine());
+
+                        System.out.print("Novo email: ");
+                        aluno.setEmail(input.nextLine());
+
+                        System.out.print("Nova data nascimento (AAAA-MM-DD): ");
+                        aluno.setDataNascimento(
+                                java.time.LocalDate.parse(
+                                        input.nextLine()
+                                )
+                        );
+
+                        System.out.print("Novo telefone: ");
+                        aluno.setTelefone(input.nextLine());
+
+                        alunoDaoMethods.atualizarAluno(aluno);
+
+                    } else {
+
+                        System.out.println(
+                                "Aluno não encontrado."
+                        );
+                    }
                 break;
 
                 case 3:
-                    System.out.println("Excluir Aluno");
+
+                    System.out.println("===== EXCLUIR ALUNO =====");
+                    System.out.print("Informe o ID: ");
+                    int idExcluir = input.nextInt();
+                    alunoDaoMethods.excluirAluno(idExcluir);
+
                 break;
 
                 case 4:
@@ -93,7 +132,9 @@ public class App {
                         System.out.println("Nenhum aluno encontrado" + idBusca + "Encontrado");
                     }
                     break;
-
+                case 0:
+                    System.out.println("Encerrando sistema...");
+                    break;
             }
 
         }while(opcao != 0);
